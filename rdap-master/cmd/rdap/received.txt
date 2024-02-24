@@ -1,0 +1,30 @@
+{
+    "OAuth2Token": {
+        "access_token": "ya29.a0AfB_byC6Ie7SVigkGKEYBE2s4LRHCKA28RR7PuhpECy--ugXfkiMVgfDkR90F63A5BkIWLZyfdLmToUZfDUehjtATqnfVE-1xQTSgSrr7IOIOJlrpg3yScUsBGLCr7oLjyxMobsuW9jffck9VhYCOmmSbJCiCOrnqgaCgYKAQsSARMSFQHGX2Mi1avfbTKb3qzztIvGgsqWvg0169",
+        "token_type": "Bearer",
+        "expiry": "2024-02-22T20:50:49.393195043+08:00"
+    },
+    "UserInfo": {
+        "sub": "115199660478099487343",
+        "profile": "",
+        "email": "lldavuull1@gmail.com",
+        "email_verified": true
+    },
+    "IDTokenClaims": {
+        "iss": "https://accounts.google.com",
+        "azp": "554594316616-38l3pf5j8ib524rdb1qgvk76ptcjjlvj.apps.googleusercontent.com",
+        "aud": "554594316616-38l3pf5j8ib524rdb1qgvk76ptcjjlvj.apps.googleusercontent.com",
+        "sub": "115199660478099487343",
+        "email": "lldavuull1@gmail.com",
+        "email_verified": true,
+        "at_hash": "aGf6BbvpHIsoTKIG45cBYg",
+        "nonce": "oRrBLhcKvH113LfHF2FoXw",
+        "name": "Meow Azu",
+        "picture": "https://lh3.googleusercontent.com/a/ACg8ocJPNS7lWg9wkcPDLZDAoEMFO_7OtwHT-5WXTV_y88pDbkRx=s96-c",
+        "given_name": "Meow",
+        "family_name": "Azu",
+        "locale": "zh-TW",
+        "iat": 1708602650,
+        "exp": 1708606250
+    }
+}
