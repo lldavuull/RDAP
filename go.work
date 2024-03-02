@@ -1,0 +1,6 @@
+go 1.21.3
+
+use (
+	./go-oidc-3
+	./rdap-master
+)

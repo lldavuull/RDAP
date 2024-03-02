@@ -15,6 +15,16 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// UserInfo represents the OpenID Connect userinfo claims.
+type UserInfo struct {
+	UserInfo struct {
+		Subject       string `json:"sub"`
+		Profile       string `json:"profile"`
+		Email         string `json:"email"`
+		EmailVerified bool   `json:"email_verified"`
+	}
+}
+
 type responseWriter struct {
 	http.ResponseWriter
 	body bytes.Buffer
@@ -31,6 +41,11 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 	return rw.body.Write(b)
 }
 func handler(w http.ResponseWriter, r *http.Request) {
+	// 創建一個身份對應表
+	identityMap := map[string]string{
+		"115199660478099487343": "registrar",
+		"default":               "guest",
+	}
 	if r.Method == http.MethodPost { //如果是post就執行
 		contentType := r.Header.Get("Content-Type")
 		switch contentType {
@@ -68,6 +83,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			resp := struct { //回傳資料 resp = response
 				UserInfo *oidc.UserInfo
 			}{userInfo} //設定回傳資料
+
 			data, err := json.MarshalIndent(resp, "", "    ") //將resp轉成json格式
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError) //檢查resp是否正確
@@ -98,15 +114,35 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "RDAP command failed", http.StatusInternalServerError)
 			}
 
-			redactedBody := redactResponse(rw.body.String()) //將回應內容轉換為*REDACTED*
+			// 從 userinfo的 sub 值獲取對應的身份
+			// 讀取檔案的內容
+			content_userinfo, err := os.ReadFile("received_userinfo.txt")
+			if err != nil {
+				http.Error(w, "Error reading file", http.StatusInternalServerError)
+				return
+			}
+			var userinfo UserInfo
+			json.Unmarshal([]byte(content_userinfo), &userinfo)
+			sub := userinfo.UserInfo.Subject
+			// 從身份對應表中獲取身份
+			identity, ok := identityMap[sub]
+			if !ok {
+				// 如果 sub 值在身份對應表中不存在，則使用默認身份
+				identity = identityMap["default"]
+			}
+			//根據身份編輯字串
+			if identity == "registrar" {
+				w.Write(rw.body.Bytes())
+			} else {
+				redactedBody := redactResponse(rw.body.String()) //將回應內容轉換為*REDACTED*
+				// 將修改後的回應寫入原始的 w
+				w.Write([]byte(redactedBody))
+			}
 
-			// 將修改後的回應寫入原始的 w
-			w.Write([]byte(redactedBody))
 		default:
 			http.Error(w, "Unsupported content type", http.StatusBadRequest)
 			return
 		}
-
 	}
 	if r.Method == http.MethodGet { //如果是get就執行
 		// 讀取檔案的內容
@@ -137,6 +173,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
 	// 註冊 HTTP 處理器函數
 	http.HandleFunc("/", handler)
 	// 啟動 HTTP 伺服器
